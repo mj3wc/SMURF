@@ -1,24 +1,21 @@
-//////////////////// arithmetic expression /////////////////////////////
-arithmetic_expression
-  = mult_term (addop mult_term)*
+{
+    const AST = options.AST
+}
 
+arithmentic_expression
+  = head:mult_term rest:(addop mult_term)*
+        {return rest.reduce(
+            (result, [operator, right]) => new AST.BinOp(result, operator, right),
+            head
+        )
+        }
 mult_term
-  = primary (mulop primary)*
-
+  = head:primary rest:(mulop primary)*
 primary
-  = integer
-  | "(" arithmetic_expression ")"
-  // | function_call                  // I've commented these
-  // | variable_value                 // two out for now
-
+  = left:integer right: "(" arithmentic_expression ")"
 integer
-  = ("+" | "-") digits
-
-digits
-  = ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")+
-
+  = [0-9]+
 addop
-  = '+' | '-'
-
+  = '+' / '-'
 mulop
-  = '*' | '/'
+  = '*' / '/'

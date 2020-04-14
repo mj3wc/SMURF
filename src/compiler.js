@@ -26,8 +26,12 @@
 //   The default printFunction simply writes to the console. I also have
 //   a version that the tests use so I can capture output.
 
-
+import * as AST from "./ast.js"
+import Interpreter from "./interpreter.js"
 export default function compileAndRun(grammar, script, printFunction) {
-
-  return // ... the value returned by executing the SMURF script
+  let ast = grammar.parse(process.argv[2], { AST: AST })
+  let interpreter = new Interpreter();
+ // let result = interpreter.visit(ast)
+  console.log(ast)
+  return ast// ... the value returned by executing the SMURF script
 }
