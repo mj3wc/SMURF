@@ -18,7 +18,7 @@ export default class Interpreter{
                 return left * right 
             
             case "/":
-                return Math.round(left / right)
+                return Math.round(left / right) //must round for integer divison
         }
     }
 
