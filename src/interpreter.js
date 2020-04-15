@@ -10,9 +10,15 @@ export default class Interpreter{
         switch(node.operator){
             case "+" :
                 return left + right
+            
+            case "-" : 
+                return left - right
 
             case "*" :
                 return left * right 
+            
+            case "/":
+                return Math.round(left / right)
         }
     }
 
