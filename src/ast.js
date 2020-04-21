@@ -30,3 +30,13 @@ export class Assignment{
         return visitor.Assignment(this)
     }
 }
+
+export class VariableName{
+    constructor(name){
+        this.name = name
+    }
+
+    accept(visitor){
+        return visitor.VariableName(this)
+    }
+}

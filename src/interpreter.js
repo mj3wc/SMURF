@@ -33,4 +33,12 @@ export default class Interpreter{
         return expr
     }
 
+    VariableName(node){
+        return node.name
+    }
+
+    setVariable(name, value){
+        this.binding.set(name,value)
+    }
+
 }
