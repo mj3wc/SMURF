@@ -4,64 +4,64 @@
 
 start
   = code
-
 identifier
   = [a-z]([a-z][A-Z][0-9]_)*
 
-///////////////////////// blocks (lists of statements) /////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 code
-  = statement+
+  = term:statement+
+  {return new AST.StatementList(term)}
 
 statement
-  = "let" __ variable_declaration
-  / assignment
-  / expr
+  = "let" _ term:variable_declaration
+  {return term}
+  / term:assignment
+  {return term}
+  / term:expr
+  {return term}
 
-//////////////// variables & variable declaration /////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
 variable_declaration
-  = variable_name "=" expr
-  {return new AST.assignment(variable_name, expr)}
-  / variable_name
-  {return new AST.assignment(variable_name)}
+  = _ left:variable_name _ "=" _ right:expr _
+  {return new AST.Assignment(left, right)}
+  / term:variable_name
+  {return new AST.Assignmetn(term, new AST.Integer(1))}
 
-variable_value             // as rvalue
-  =  _ identifier
-  {return new AST.VariableValue(identifier)}
+variable_value
+  = id:identifier
+  {return new AST.VariableValue(id.join(""))}
 
-variable_name              // as lvalue
-  =  identifier
-  {return AST.VariableName(identifier)}
+variable_name
+  = id:identifier
+  {return new AST.VariableName(id.join(""))}
 
-//////////////////////////////// if/then/else /////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
 if_expression
-  = _ "if" _ exp:expr _ block:brace_block _ "else" _ elseBlk:brace_block
-  {return new AST.ifThenElse(exp, block, elseBlk)}
-  / _"if" exp:expr block:brace_block
-  {return new AST.ifThen(exp,block)}
+  = _ predicate:expr _ thenCode:brace_block _ "else" _ elseCode:brace_block  _
+  {return new AST.IfStatement(predicate, thenCode, elseCode)}
+  / predicate:expr _ elseCode:brace_block
+  {return new AST.IfStatement(predicate, elseCode, "")}
 
-///////////////////////////// assignment ///////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 assignment
-  = variable_name _"=" _ expr
-  {return new AST.Assignment(variable_name, expr)}
-
-//////////////////////////////// expression /////////////////////////////
-
+  = left:variable_name _ "=" _ right:expr
+  {return new AST.Assignment(left, right)}
+///////////////////////////////////////////////////////////////////////////////////////////////////
 expr
-  = function_definition
-  / if_expression
-  / boolean_expression
-  / arithmetic_expression
-
-
-/////////////////////// boolean expression /////////////////////////////
-
+  = "fn" _ function_definition
+  / _ "if" _ term:if_expression
+  {return term}
+  / term:boolean_expression
+  {return term}
+  / term:arithmetic_expression
+  {return term}
+///////////////////////////////////////////////////////////////////////////////////////////////////
 boolean_expression
-  = head:arithmentic_expression rest:(relop arithmentic_expression)*
-  {return BinOp(head,rest)}
-
+  = _ head:arithmetic_expression _ rest:(relop right:arithmetic_expression)* _
+  {return rest.reduce((result, [op, right])=>
+    new AST.BinOp(result, op, right), head)
+      }
 //////////////////// arithmetic expression /////////////////////////////
 
 arithmetic_expression
@@ -107,25 +107,27 @@ mulop
 	= '*' / '/'
 
 relop
-  = '==' / '!=' / '>=' / '>' / '<=' / '<'
+  = _ ('==' / '!=' / '>=' / '>' / '<=' / '<') _
 
   
 //////////////////////////////// function call /////////////////////////////
 
 function_call
-  = variable_value "(" ")"     // note: no parameters
+  = var:variable_value _ "(" _ ")" _   // note: no parameters
+  {return new AST.FunctionCall(var, "")}
 
 //////////////////////// function definition /////////////////////////////
 
 function_definition
-  = "fn" _ param: param_list _ code:brace_block
+  =  _ param: param_list _ code:brace_block _
   {return new AST.FunctionDefinition(param,code)}
 
 param_list
-   = "("")"
+   = "(" ")"
 
 brace_block
-  = "{" _ code _"}"
+  = "{" _ code:code _"}"
+  {return code}
 
 space
   = [ \t\n\r]

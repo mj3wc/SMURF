@@ -32,6 +32,6 @@ export default function compileAndRun(grammar, script, printFunction) {
   let ast = grammar.parse(script, { AST: AST })
   let interpreter = new Interpreter()
   let result = interpreter.visit(ast)
-  //console.log(result) ..For Testing
+  console.log(result) //..For Testing
   return result// ... the value returned by executing the SMURF script
 }

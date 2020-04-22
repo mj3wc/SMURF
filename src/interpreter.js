@@ -1,4 +1,8 @@
 export default class Interpreter{
+constructor(target, printFunction){
+    this.binding = new Map()
+}
+
     visit(node){
         return node.accept(this)
     }
@@ -65,7 +69,7 @@ export default class Interpreter{
     }
 
     getVariable(name){
-        this.binding.get(name)
+       return this.binding.get(name)
     }
 
     FunctionDefiniton(node){
@@ -75,6 +79,22 @@ export default class Interpreter{
     FunctionCall(node){
         let bodyAST = node.name.accept(this)
         return bodyAST.accept(this)
+    }
+
+    IfStatement(node){
+        let isTrue = node.predicate.accept(this)
+        if(isTrue)
+            return node.thenCode.accept(this)
+        else
+            return node.elseCode.accept(this)
+    }
+
+    StatementList(node){
+        let statements = node.statements
+        var toReturn
+        for(let i = 0; i < statements.length; i++)
+            toReturn = node.statements[i].accept(this)
+        return toReturn
     }
 
 }

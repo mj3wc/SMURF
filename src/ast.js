@@ -51,6 +51,28 @@ export class VariableValue{
     }
 }
 
+export class IfStatement{
+    constructor(predicate, thenCode, elseCode){
+        this.predicate = predicate
+        this.thenCode = thenCode
+        this.elseCode = elseCode
+    }
+
+    accept(visitor){
+        return visitor.IfStatement(this)
+    }
+}
+
+export class StatementList{
+    constructor(statements){
+        this.statements = statements
+    }
+
+    accept(visitor){
+        return visitor.StatementList(this)
+    }
+}
+
 export class FunctionDefinition{
     constructor(param, code){
         this.parameter = param
@@ -70,5 +92,17 @@ export class FunctionCall{
 
     accept(visitor){
         return visitor.FunctionCall(this)
+    }
+}
+
+export class BoundFunction{
+    constructor(formals, code, binding){
+        this.formals = formals
+        this.code = code
+        this.binding = binding
+    }
+
+    accept(visitor){
+        return visitor.BoundFunction(this)
     }
 }
