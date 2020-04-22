@@ -1,18 +1,17 @@
 export class BinOp{
     constructor(l, op, r){
         this.left = l
-        this.operator = op
+        this.op = op
         this.right = r
     }
-
     accept(visitor){
         return visitor.visitBinOp(this)
-    }
+    } 
 }
 
 export class Integer{
-    constructor(val){
-        this.value = val
+    constructor(value){
+        this.value = value
     }
 
     accept(visitor){
@@ -21,11 +20,10 @@ export class Integer{
 }
 
 export class Assignment{
-    constructor(l,r){
+    constructor(l, r){
         this.variable = l
         this.expr = r
     }
-
     accept(visitor){
         return visitor.Assignment(this)
     }
@@ -42,8 +40,8 @@ export class VariableName{
 }
 
 export class VariableValue{
-    constructor(name){
-        this.name = name
+    constructor(value){
+        this.value = value
     }
 
     accept(visitor){
@@ -73,21 +71,10 @@ export class StatementList{
     }
 }
 
-export class FunctionDefinition{
-    constructor(param, code){
-        this.parameter = param
-        this.code = block
-    }
-
-    accept(visitor){
-        return visitor.FunctionDefinition(this)
-    }
-}
-
 export class FunctionCall{
-    constructor(name, arg){
+    constructor(name, args){
         this.name = name
-        this.arg = arg
+        this.args = args
     }
 
     accept(visitor){
@@ -95,14 +82,14 @@ export class FunctionCall{
     }
 }
 
-export class BoundFunction{
-    constructor(formals, code, binding){
+export class FunctionDefinition{
+    constructor(formals, code){
         this.formals = formals
         this.code = code
-        this.binding = binding
     }
 
     accept(visitor){
-        return visitor.BoundFunction(this)
+        return visitor.FunctionDefinition(this)
     }
 }
+

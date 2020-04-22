@@ -1,49 +1,36 @@
+const Operations = {
+    "+": (l, r) => l + r,
+    "-": (l, r) => l - r,
+    "*": (l, r) => l * r,
+    "/": (l, r) => Math.round(l / r),
+    "==": (l, r) => l == r,
+    "!=": (l, r) => l != r,
+    ">=": (l, r) => l >= r,
+    ">": (l, r) => l > r,
+    "<=": (l, r) => l <= r,
+    "<": (l, r) => l < r,
+  }
+
 export default class Interpreter{
-constructor(target, printFunction){
-    this.binding = new Map()
-}
+    constructor(target, printFunction){
+        this.binding = new Map()
+    }
 
     visit(node){
         return node.accept(this)
     }
 
-    visitBinOp(node){
-        let left = node.left.accept(this)
-        let right = node.right.accept(this)
-
-        switch(node.operator){
-            case "+" :
-                return left + right
-            
-            case "-" : 
-                return left - right
-
-            case "*" :
-                return left * right 
-            
-            case "/":
-                return Math.round(left / right) //must round for integer divison
-
-            case "==":
-                return left == right
-            
-            case "!=":
-                return left != right
-            
-            case ">":
-                return left > right
-            
-            case "<":
-                return left < right
-
-            case ">=":
-                return left >= right
-
-            case "<=":
-                return left <= right
-            
+    visitBinOp(node) {
+        let l = node.left.accept(this)
+        let r = node.right.accept(this)
+        if (Operations[node.op](l, r) == true) {
+          return 1;
         }
-    }
+        if (Operations[node.op](l, r) == false) {
+          return 0;
+        }
+        return Operations[node.op](l, r)
+      }
 
     visitInteger(node){
         return node.value
@@ -52,7 +39,7 @@ constructor(target, printFunction){
     Assignment(node){
         let variable = node.variable.accept(this)
         let expr = node.expr.accept(this)
-        this.setVariable(varibale, expr)
+        this.setVariable(variable, expr)
         return expr
     }
 
@@ -60,25 +47,21 @@ constructor(target, printFunction){
         return node.name
     }
 
-    setVariable(name, value){
-        this.binding.set(name,value)
-    }
-
     VariableValue(node){
-        return this.getVariable(node.name)
+        return this.getValue(node.value)
     }
 
-    getVariable(name){
-       return this.binding.get(name)
+    getValue(name){
+        let temp = this.binding.get(name)
+        if(temp == undefined)
+            return 0
+        else
+            return this.binding.get(name)
     }
 
-    FunctionDefiniton(node){
-        return node.code
-    }
-
-    FunctionCall(node){
-        let bodyAST = node.name.accept(this)
-        return bodyAST.accept(this)
+    setVariable(name, value){
+        this.binding.set(name, value)
+        console.log(this)
     }
 
     IfStatement(node){
@@ -97,4 +80,12 @@ constructor(target, printFunction){
         return toReturn
     }
 
+    FunctionDefinition(node){
+        return node.code
+    }
+
+    FunctionCall(node){
+        let bodyAST = node.name.accept(this)
+        return bodyAST.accept(this)
+    }
 }
