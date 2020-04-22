@@ -40,3 +40,35 @@ export class VariableName{
         return visitor.VariableName(this)
     }
 }
+
+export class VariableValue{
+    constructor(name){
+        this.name = name
+    }
+
+    accept(visitor){
+        return visitor.VariableValue(this)
+    }
+}
+
+export class FunctionDefinition{
+    constructor(param, code){
+        this.parameter = param
+        this.code = block
+    }
+
+    accept(visitor){
+        return visitor.FunctionDefinition(this)
+    }
+}
+
+export class FunctionCall{
+    constructor(name, arg){
+        this.name = name
+        this.arg = arg
+    }
+
+    accept(visitor){
+        return visitor.FunctionCall(this)
+    }
+}

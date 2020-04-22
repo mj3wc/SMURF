@@ -19,6 +19,25 @@ export default class Interpreter{
             
             case "/":
                 return Math.round(left / right) //must round for integer divison
+
+            case "==":
+                return left == right
+            
+            case "!=":
+                return left != right
+            
+            case ">":
+                return left > right
+            
+            case "<":
+                return left < right
+
+            case ">=":
+                return left >= right
+
+            case "<=":
+                return left <= right
+            
         }
     }
 
@@ -39,6 +58,23 @@ export default class Interpreter{
 
     setVariable(name, value){
         this.binding.set(name,value)
+    }
+
+    VariableValue(node){
+        return this.getVariable(node.name)
+    }
+
+    getVariable(name){
+        this.binding.get(name)
+    }
+
+    FunctionDefiniton(node){
+        return node.code
+    }
+
+    FunctionCall(node){
+        let bodyAST = node.name.accept(this)
+        return bodyAST.accept(this)
     }
 
 }
