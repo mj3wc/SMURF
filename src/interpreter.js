@@ -61,7 +61,6 @@ export default class Interpreter{
 
     setVariable(name, value){
         this.binding.set(name, value)
-        console.log(this)
     }
 
     IfStatement(node){
