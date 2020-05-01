@@ -1,90 +1,100 @@
-const Operations = {
-    "+": (l, r) => l + r,
-    "-": (l, r) => l - r,
-    "*": (l, r) => l * r,
-    "/": (l, r) => Math.round(l / r),
-    "==": (l, r) => l == r,
-    "!=": (l, r) => l != r,
-    ">=": (l, r) => l >= r,
-    ">": (l, r) => l > r,
-    "<=": (l, r) => l <= r,
-    "<": (l, r) => l < r,
+function bool(value) {
+  return value ? 1 : 0
+}
+
+const operations = {
+  "+": (l, r) => l + r,
+  "-": (l, r) => l - r,
+  "*": (l, r) => l * r,
+  "/": (l, r) => Math.round(l / r),
+
+  "<":  (l,r) => bool(l < r),
+  "<=": (l,r) => bool(l <= r),
+  "==": (l,r) => bool(l == r),
+  ">=": (l,r) => bool(l >= r),
+  ">":  (l,r) => bool(l > r),
+  "!=": (l,r) => bool(l != r),
+
+}
+
+import Binding from "../binding.js"
+
+export default class Interpreter {
+
+  constructor(target, printFunction) {
+    this.target = target
+    this.printFunction = printFunction
+    this.binding = new Binding()
   }
 
-export default class Interpreter{
-    constructor(target, printFunction){
-        this.binding = new Map()
-    }
+  visit() {
+    return this.target.accept(this)
+  }
 
-    visit(node){
-        return node.accept(this)
-    }
+  Assignment(node) {
+    let variable = node.variable.accept(this)
+    let expr     = node.expr.accept(this)
+    this.binding.updateVariable(variable, expr)
+    return expr
+  }
 
-    visitBinOp(node) {
-        let l = node.left.accept(this)
-        let r = node.right.accept(this)
-        if (Operations[node.op](l, r) == true) {
-          return 1;
-        }
-        if (Operations[node.op](l, r) == false) {
-          return 0;
-        }
-        return Operations[node.op](l, r)
-      }
+  BinOp(node) {
+    let l = node.l.accept(this)
+    let r = node.r.accept(this)
+    return operations[node.op](l, r)
+  }
 
-    visitInteger(node){
-        return node.value
-    }
+  FunctionCall(node) {
+    let bodyAst = node.name.accept(this)
+    return bodyAst.accept(this)
+  }
 
-    Assignment(node){
-        let variable = node.variable.accept(this)
-        let expr = node.expr.accept(this)
-        this.setVariable(variable, expr)
-        return expr
-    }
+  FunctionDefinition(node) {
+    return node.code
+  }
 
-    VariableName(node){
-        return node.name
-    }
+  IfStatement(node) {
+    let predicate = bool(node.predicate.accept(this))
 
-    VariableValue(node){
-        return this.getValue(node.value)
-    }
+    if (predicate == 1)
+      return node.thenCode.accept(this)
 
-    getValue(name){
-        let temp = this.binding.get(name)
-        if(temp == undefined)
-            return 0
-        else
-            return this.binding.get(name)
-    }
+    return node.elseCode.accept(this)
+  }
 
-    setVariable(name, value){
-        this.binding.set(name, value)
-    }
+  IntegerValue(node) {
+    return node.value
+  }
 
-    IfStatement(node){
-        let isTrue = node.predicate.accept(this)
-        if(isTrue)
-            return node.thenCode.accept(this)
-        else
-            return node.elseCode.accept(this)
-    }
+  InternalPrint(node) {
+    let args = node.args.map(a => a.accept(this).toString() )
+    this.printFunction(args)
+    return args
+  }
 
-    StatementList(node){
-        let statements = node.statements
-        var toReturn
-        for(let i = 0; i < statements.length; i++)
-            toReturn = node.statements[i].accept(this)
-        return toReturn
-    }
+  StatementList(node) {
+    let result = 0
+    node.statements.forEach(statement =>
+      result = statement.accept(this)
+    )
+    return result
+  }
 
-    FunctionDefinition(node){
-        return node.code
+  VariableDeclaration(node) {
+    let variable = node.variable.accept(this)
+    let initialValue = 0
+    if (node.initialValue) {
+      initialValue = node.initialValue.accept(this)
     }
+    this.binding.setVariable(variable, initialValue)
+    return initialValue
+  }
 
-    FunctionCall(node){
-        let bodyAST = node.name.accept(this)
-        return bodyAST.accept(this)
-    }
+  VariableName(node) {
+    return node.name
+  }
+
+  VariableValue(node) {
+    return this.binding.getVariableValue(node.name)
+  }
 }
