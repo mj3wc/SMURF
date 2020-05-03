@@ -1,6 +1,6 @@
  import * as AST from "./ast.js"
 // //import PrettyPrinter from "./visitors/pretty_printer.js"
- import Interpreter from "./visitors/interpreter.js"
+ import Interpreter from "./visitors/Interpreter.js"
 
 
 export default function compileAndRun(parser, script, printFunction) {

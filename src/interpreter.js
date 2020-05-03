@@ -18,6 +18,7 @@ const operations = {
 }
 
 import Binding from "../binding.js"
+import * as AST from "../ast.js"
 
 export default class Interpreter {
 
@@ -45,7 +46,7 @@ export default class Interpreter {
   }
 
   FunctionCall(node) {
-    let bodyAst = node.name.accept(this)
+    let thunk = node.name.accept(this)
     return bodyAst.accept(this)
   }
 
