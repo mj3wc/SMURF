@@ -50,7 +50,7 @@ export default class Interpreter {
   }
 
   FunctionDefinition(node) {
-    return node.code
+    return new AST.Thunk(node.formals, node.code, this.binding)
   }
 
   IfStatement(node) {

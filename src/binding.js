@@ -1,13 +1,21 @@
 export default class Binding {
-  constructor() {
+  constructor(parent = null) {
     this.binding = new Map()
+    this.parent = parent
+  }
+
+  push(){
+    return new Binding(this)
+  }
+
+  pop(){
+    return this.parent
   }
 
   getVariableValue(name) {
     this.checkVariableExists(name)
     return this.binding.get(name)
   }
-
 
   setVariable(name, value) {
     if (this.binding.has(name))
