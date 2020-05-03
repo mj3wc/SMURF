@@ -16,8 +16,7 @@ export default class Binding {
   }
 
   updateVariable(name, value) {
-    this.checkVariableExists(name)
-    this.setVariable(name, value)
+    this.binding.set(name, value)
   }
 
   checkVariableExists(name) {
