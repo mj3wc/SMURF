@@ -18,7 +18,7 @@ const operations = {
 }
 
 import Binding from "../binding.js"
-import * as AST from "../ast.js"
+import AST from "../ast.js"
 
 export default class Interpreter {
 

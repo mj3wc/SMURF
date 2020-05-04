@@ -125,13 +125,13 @@ relop
 function_call
   = 'print' _ '(' _ args:call_arguments _ ')'
     { return new AST.InternalPrint(args) }
-
   / name:variable_value "(" _ args:call_arguments _ ")"
     { return new AST.FunctionCall(name, args) }
 
 call_arguments
-  = ''
-    { return [] }
+  = args: ((",")? _ expr)+
+    { return args }
+  / ''
 
 //////////////////////////////// function definition /////////////////////////////
 
@@ -140,7 +140,9 @@ function_definition
     { return new AST.FunctionDefinition(params, code) }
 
 param_list
-   = "(" _ ")" { return [] }
+   = "(" _ ")"
+   / "(" params: ((",")? _ variable_name )+ ")" 
+      { return params}
 
 brace_block
   = "{" _ code:code _ "}" { return code }

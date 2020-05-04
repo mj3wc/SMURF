@@ -14,6 +14,7 @@ export default class Binding {
 
   getVariableValue(name) {
     this.checkVariableExists(name)
+    
     return this.binding.get(name)
   }
 
@@ -24,6 +25,7 @@ export default class Binding {
   }
 
   updateVariable(name, value) {
+    this.checkVariableExists(name)
     this.binding.set(name, value)
   }
 
