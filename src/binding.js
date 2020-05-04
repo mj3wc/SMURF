@@ -26,7 +26,10 @@ export default class Binding {
 
 
   updateVariable(name, value) {
-    this.binding.set(name, value)
+    if(this.checkVariableExists(name))
+        this.binding.set(name, value)
+    else
+      throw new Error('Varible DNE')
   }
 
   checkVariableExists(name) { 
