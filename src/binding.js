@@ -5,43 +5,47 @@ export default class Binding {
   }
 
   getVariableValue(name) {
+
     if (this.checkVariableExists(name))
       return this.binding.get(name)
+
     else if (this.parent != null)
       return this.parent.getVariableValue(name)
-    throw new Error("Variable does not exist")
+
+    else
+      throw new Error("Variable does not exist")
   }
 
 
   setVariable(name, value) {
     if (this.binding.has(name))
       throw new Error(`Duplicate declaration for variable ${name}`)
-    this.binding.set(name, value)
+    else
+      this.binding.set(name, value)
   }
 
 
   updateVariable(name, value) {
-    let update = this.getBinding(name)
-    update.binding.set(name, value)
+    this.binding.set(name, value)
   }
 
-  checkVariableExists(name) {
-    if (!this.binding.has(name))
-      return false
-    return true
+  checkVariableExists(name) { 
+    if (!this.binding.has(name)){
+      let parent = this.pop()
+      if(parent == null){
+        throw new Error(`Reference to unknown variable ${name}`)
+      }
+      else
+        parent.checkVariableExists(name)      
+    }
+    else{
+      return true
+    }
   }
 
-  getBinding(name) {
-    if (this.checkVariableExists(name))
-      return this
-    else if (this.parent != null)
-      return this.parent.getBinding(name)
-    throw new Error("Variable does not exist")
-  }
 
   push() {
-    let newBinding = new Binding(this)
-    return newBinding
+    return new Binding(this)
   }
   pop() {
     return this.parent
