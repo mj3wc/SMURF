@@ -125,6 +125,7 @@ relop
 function_call
   = 'print' _ '(' _ args:call_arguments _ ')'
     { return new AST.InternalPrint(args) }
+
   / name:variable_value "(" _ args:call_arguments _ ")"
     { return new AST.FunctionCall(name, args) }
 
@@ -143,6 +144,10 @@ param_list
    = "(" _ ")"
    / "(" params: ((",")? _ variable_name )+ ")" 
       { return params}
+  
+extra_params
+  = ","_ varName:variable_name _ 
+    {return varName}
 
 brace_block
   = "{" _ code:code _ "}" { return code }

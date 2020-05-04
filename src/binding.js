@@ -4,19 +4,14 @@ export default class Binding {
     this.parent = parent
   }
 
-  push(){
-    return new Binding(this)
-  }
-
-  pop(){
-    return this.parent
-  }
-
   getVariableValue(name) {
-    this.checkVariableExists(name)
-    
-    return this.binding.get(name)
+    if (this.checkVariableExists(name))
+      return this.binding.get(name)
+    else if (this.parent != null)
+      return this.parent.getVariableValue(name)
+    throw new Error("Variable does not exist")
   }
+
 
   setVariable(name, value) {
     if (this.binding.has(name))
@@ -24,13 +19,31 @@ export default class Binding {
     this.binding.set(name, value)
   }
 
+
   updateVariable(name, value) {
-    this.checkVariableExists(name)
-    this.binding.set(name, value)
+    let update = this.getBinding(name)
+    update.binding.set(name, value)
   }
 
   checkVariableExists(name) {
     if (!this.binding.has(name))
-      throw new Error(`Reference to unknown variable ${name}`)
+      return false
+    return true
+  }
+
+  getBinding(name) {
+    if (this.checkVariableExists(name))
+      return this
+    else if (this.parent != null)
+      return this.parent.getBinding(name)
+    throw new Error("Variable does not exist")
+  }
+
+  push() {
+    let newBinding = new Binding(this)
+    return newBinding
+  }
+  pop() {
+    return this.parent
   }
 }
